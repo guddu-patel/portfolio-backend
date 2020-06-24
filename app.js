@@ -15,6 +15,7 @@ require('./config/db');
 // initialize CORS middleware
 app.use(cors());
 app.use('/public/uploads', express.static('public/uploads'));
+// app.use(express.static(__dirname + '/public/uploads'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());

@@ -1,12 +1,71 @@
 const Post = require('../models/Post');
 const { postValidation }  = require('../validation');
 
+
+const multer = require('multer');
+const path = require('path');
+
+// multer disk storage settings
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, './public/uploads');
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${file.fieldname}-${Date.now()}.${file.originalname.split('.')[file.originalname.split('.').length -1]}`);
+    }
+});
+
+// to filter the incoming file requests
+const fileFilter = (req, file, cb) => {
+    const fileTypes = /jpeg|jpg|png|gif/;
+    const extName = fileTypes.test(path.extname(file.originalname).toLocaleLowerCase());
+
+    const mimeType = fileTypes.test(file.mimetype);
+    if(mimeType && extName){
+        return cb(null, true)
+    }else{
+        cb('Only images with type .jpg, .jpeg, .png & .gif are allowed', false);
+    }
+}
+
+// set upload options of multer
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 1024 * 1024 * 5 },
+    fileFilter: fileFilter,
+}).single('post_image');
+
+
 // post create controller
 exports.create_post = async (req, res) => {
     //validate
-    const {error} = postValidation(req.body);
-    if (error) return res.status(400).json({success:false, message:error.details[0].message});
+    //const {error} = postValidation(req.body);
+    //if (error) return res.status(400).json({success:false, message:error.details[0].message});
 
+    // works on handling multer error
+    await upload(req, res, (err) => {
+        if(err){
+            if (err instanceof multer.MulterError) {
+                if(err.code === 'LIMIT_FILE_SIZE'){
+                    err.message = 'File size too large. Only file upto 5MB is allowed.'
+                }
+                err = err.message;
+            }
+            return res.status(400).json({success: false, message: err});
+        }
+        else{
+            if(req.file === undefined){  // check if the file exits
+                return res.status(400).json({error: false, message:'Please select blog image first'})
+            }else{
+                handlePostCreate(req, res);
+                //console.log(req.file);
+            }
+        }
+    });
+
+};
+
+const handlePostCreate = async (req, res) => {
     const post = new Post({
         title: req.body.title,
         description: req.body.description,
@@ -20,7 +79,7 @@ exports.create_post = async (req, res) => {
         .catch(err => {
             res.status(400).json({success: false, message: err});
         });
-};
+}
 
 // post update controller
 exports.update_post = async (req, res) => {
