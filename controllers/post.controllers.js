@@ -1,5 +1,5 @@
 const Post = require('../models/Post');
-const { postValidation }  = require('../validation');
+const { postValidation } = require('../validation');
 
 
 const multer = require('multer');
@@ -11,7 +11,7 @@ const storage = multer.diskStorage({
         cb(null, './public/uploads');
     },
     filename: (req, file, cb) => {
-        cb(null, `${file.fieldname}-${Date.now()}.${file.originalname.split('.')[file.originalname.split('.').length -1]}`);
+        cb(null, `${file.fieldname}-${Date.now()}.${file.originalname.split('.')[file.originalname.split('.').length - 1]}`);
     }
 });
 
@@ -21,9 +21,9 @@ const fileFilter = (req, file, cb) => {
     const extName = fileTypes.test(path.extname(file.originalname).toLocaleLowerCase());
 
     const mimeType = fileTypes.test(file.mimetype);
-    if(mimeType && extName){
+    if (mimeType && extName) {
         return cb(null, true)
-    }else{
+    } else {
         return cb('Only images with type .jpg, .jpeg, .png & .gif are allowed', false);
     }
 }
@@ -38,29 +38,26 @@ const upload = multer({
 
 // post create controller
 exports.create_post = async (req, res) => {
-
-    return res.send(req.body);
-    //validate
-    const {error} = postValidation(req.body);
-    if (error) return res.status(400).json({success:false, message:error.details[0].message});
-
     // works on handling multer error
     await upload(req, res, (err) => {
-        if(err){
+        const { error } = postValidation(req.body);
+        if (error) return res.status(400).json({ success: false, message: error.details[0].message });
+        return res.send([req.body, req.file]);
+        if (err) {
             if (err instanceof multer.MulterError) {
-                if(err.code === 'LIMIT_FILE_SIZE'){
+                if (err.code === 'LIMIT_FILE_SIZE') {
                     err.message = 'File size too large. Only file upto 5MB is allowed.'
-                }else{
+                } else {
                     err.message = 'File was not able to be uploaded.';
                 }
                 err = err.message;
             }
-            return res.status(400).json({success: false, message: err});
+            return res.status(400).json({ success: false, message: err });
         }
-        else{
-            if(req.file === undefined){  // check if the file exits
-                return res.status(400).json({error: false, message:'Please select blog image first'})
-            }else{
+        else {
+            if (req.file === undefined) {  // check if the file exits
+                return res.status(400).json({ error: false, message: 'Please select blog image first' })
+            } else {
                 handlePostCreate(req, res);
                 //console.log(req.file);
             }
@@ -78,18 +75,18 @@ const handlePostCreate = async (req, res) => {
     });
     await post.save()
         .then(resp => {
-            res.status(200).json({success: true, message: 'New post created successfully', post: post._id});
+            res.status(200).json({ success: true, message: 'New post created successfully', post: post._id });
         })
         .catch(err => {
-            res.status(400).json({success: false, message: err});
+            res.status(400).json({ success: false, message: err });
         });
 }
 
 // post update controller
 exports.update_post = async (req, res) => {
     //validate
-    const {error} = postValidation(req.body);
-    if (error) return res.status(400).json({success:false, message:error.details[0].message});
+    const { error } = postValidation(req.body);
+    if (error) return res.status(400).json({ success: false, message: error.details[0].message });
 
     const post = {
         title: req.body.title,
@@ -97,12 +94,12 @@ exports.update_post = async (req, res) => {
         slug: req.body.slug,
     };
 
-    await Post.findByIdAndUpdate(req.params.postId, post, {new:true})
+    await Post.findByIdAndUpdate(req.params.postId, post, { new: true })
         .then(post => {
-            res.status(200).json({success: true, message: 'PostControllers updated successfully', post: post._id});
+            res.status(200).json({ success: true, message: 'PostControllers updated successfully', post: post._id });
         })
         .catch(err => {
-            res.status(400).json({success: false, message: err});
+            res.status(400).json({ success: false, message: err });
         });
 };
 
@@ -110,10 +107,10 @@ exports.update_post = async (req, res) => {
 exports.list_all_posts = async (req, res) => {
     await Post.find()
         .then(posts => {
-            res.status(200).json({success: true, posts: posts});
+            res.status(200).json({ success: true, posts: posts });
         })
         .catch(err => {
-            res.status(400).json({success: false, message: err});
+            res.status(400).json({ success: false, message: err });
         });
 };
 
@@ -121,12 +118,12 @@ exports.list_all_posts = async (req, res) => {
 exports.find_one_post = async (req, res) => {
     await Post.findById(req.params.postId)
         .then(post => {
-            if(!post)
-                res.status(404).json({success: false, message: 'No any post found with id ' + req.params.postId});
-            res.status(200).json({success: true, post: post});
+            if (!post)
+                res.status(404).json({ success: false, message: 'No any post found with id ' + req.params.postId });
+            res.status(200).json({ success: true, post: post });
         })
         .catch(err => {
-            res.status(400).json({success: false, message: err});
+            res.status(400).json({ success: false, message: err });
         });
 };
 
@@ -135,12 +132,12 @@ exports.delete_post = async (req, res) => {
     await Post.findByIdAndRemove(req.params.postId)
         .then(post => {
             if (!post) {
-                res.status(404).json({success: false, message: 'No any post found with id ' + req.params.postId});
-            }else {
-                res.status(200).json({success: true, message: 'PostControllers deleted successfully'});
+                res.status(404).json({ success: false, message: 'No any post found with id ' + req.params.postId });
+            } else {
+                res.status(200).json({ success: true, message: 'PostControllers deleted successfully' });
             }
         })
         .catch(err => {
-            res.status(400).json({success: false, message: err});
+            res.status(400).json({ success: false, message: err });
         });
 };
