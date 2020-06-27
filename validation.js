@@ -27,7 +27,7 @@ const postValidation = (data) => {
         title: Joi.string().max(255).required(),
         description: Joi.string().required(),
         slug: Joi.string().required(),
-        post_image: Joi.string(),
+        //post_image: Joi.string(),
     });
 
     return schema.validate(data);

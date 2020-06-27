@@ -24,7 +24,7 @@ const fileFilter = (req, file, cb) => {
     if(mimeType && extName){
         return cb(null, true)
     }else{
-        cb('Only images with type .jpg, .jpeg, .png & .gif are allowed', false);
+        return cb('Only images with type .jpg, .jpeg, .png & .gif are allowed', false);
     }
 }
 
@@ -38,9 +38,11 @@ const upload = multer({
 
 // post create controller
 exports.create_post = async (req, res) => {
+
+    return res.send(req.body);
     //validate
-    //const {error} = postValidation(req.body);
-    //if (error) return res.status(400).json({success:false, message:error.details[0].message});
+    const {error} = postValidation(req.body);
+    if (error) return res.status(400).json({success:false, message:error.details[0].message});
 
     // works on handling multer error
     await upload(req, res, (err) => {
@@ -48,6 +50,8 @@ exports.create_post = async (req, res) => {
             if (err instanceof multer.MulterError) {
                 if(err.code === 'LIMIT_FILE_SIZE'){
                     err.message = 'File size too large. Only file upto 5MB is allowed.'
+                }else{
+                    err.message = 'File was not able to be uploaded.';
                 }
                 err = err.message;
             }
