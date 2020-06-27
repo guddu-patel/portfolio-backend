@@ -2,6 +2,7 @@ const router = require('express').Router();
 // const verify = require('./verifyToken');
 const verify = require('../../middleware/check-auth');
 const postController = require('../../controllers/post.controllers');
+const postSeederController = require('../../controllers/post_seeder.controllers');
 
 // insert new post
 router.post('/',  verify, postController.create_post);
@@ -17,5 +18,8 @@ router.get('/:postId', postController.find_one_post);
 
 // Delete a post with id
 router.delete('/:postId', verify, postController.delete_post);
+
+// add fake posts
+// router.get('/seed/data', verify, postSeederController.seeder);
 
 module.exports = router;
