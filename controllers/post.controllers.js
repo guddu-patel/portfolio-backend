@@ -122,7 +122,7 @@ exports.update_post = async (req, res) => {
 
 // handle post update
 const handlePostUpdate = async (req, res, post) => {
-   
+
     Post.findById(req.params.postId).select('post_image')
         .then(doc => {
             fs.unlinkSync(doc.post_image);
@@ -132,7 +132,7 @@ const handlePostUpdate = async (req, res, post) => {
 
     await Post.findByIdAndUpdate(req.params.postId, post, { new: true })
         .then(post => {
-            res.status(200).json({ success: true, message: 'PostControllers updated successfully', post: post._id });
+            res.status(200).json({ success: true, message: 'Post updated successfully', post: post._id });
         })
         .catch(err => {
             res.status(400).json({ success: false, message: err });
@@ -170,7 +170,8 @@ exports.delete_post = async (req, res) => {
             if (!post) {
                 res.status(404).json({ success: false, message: 'No any post found with id ' + req.params.postId });
             } else {
-                res.status(200).json({ success: true, message: 'PostControllers deleted successfully' });
+                fs.unlinkSync(post.post_image);
+                res.status(200).json({ success: true, message: 'Post deleted successfully' });
             }
         })
         .catch(err => {
