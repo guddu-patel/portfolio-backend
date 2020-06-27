@@ -3,6 +3,7 @@ const { postValidation } = require('../validation');
 
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 
 // multer disk storage settings
 const storage = multer.diskStorage({
@@ -83,15 +84,51 @@ const handlePostCreate = async (req, res) => {
 
 // post update controller
 exports.update_post = async (req, res) => {
-    //validate
-    const { error } = postValidation(req.body);
-    if (error) return res.status(400).json({ success: false, message: error.details[0].message });
 
-    const post = {
-        title: req.body.title,
-        description: req.body.description,
-        slug: req.body.slug,
-    };
+    // works on handling multer error on post update
+    await upload(req, res, (err) => {
+        if (err) {
+            if (err instanceof multer.MulterError) {
+                if (err.code === 'LIMIT_FILE_SIZE') {
+                    err.message = 'File size too large. Only file upto 5MB is allowed.'
+                } else {
+                    err.message = 'File was not able to be uploaded.';
+                }
+                err = err.message;
+            }
+            return res.status(400).json({ success: false, message: err });
+        }
+
+        else {
+            const post = {
+                title: req.body.title,
+                description: req.body.description,
+                slug: req.body.slug,
+            };
+
+            if(req.file){
+                post.post_image = req.file.path;
+            }else{
+                //validate
+                const {error} = postValidation(req.body);
+                if (error) return res.status(400).json({success: false, message: error.details[0].message});
+            }
+
+            //return res.send(post);
+            handlePostUpdate(req, res, post);
+        }
+    });
+};
+
+// handle post update
+const handlePostUpdate = async (req, res, post) => {
+    // return res.send('Hello');
+    Post.findById(req.params.postId).select('post_image')
+        .then(doc => {
+            fs.unlinkSync(doc.post_image);
+        }).catch(er => {
+        return res.send(er);
+    });
 
     await Post.findByIdAndUpdate(req.params.postId, post, { new: true })
         .then(post => {
@@ -100,7 +137,7 @@ exports.update_post = async (req, res) => {
         .catch(err => {
             res.status(400).json({ success: false, message: err });
         });
-};
+}
 
 // list all posts controller
 exports.list_all_posts = async (req, res) => {
