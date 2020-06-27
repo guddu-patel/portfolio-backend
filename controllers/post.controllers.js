@@ -1,7 +1,6 @@
 const Post = require('../models/Post');
 const { postValidation } = require('../validation');
 
-
 const multer = require('multer');
 const path = require('path');
 
@@ -11,6 +10,10 @@ const storage = multer.diskStorage({
         cb(null, './public/uploads');
     },
     filename: (req, file, cb) => {
+        // validate
+        const { error } = postValidation(req.body);
+        if (error) return cb(error.details[0].message, false);
+
         cb(null, `${file.fieldname}-${Date.now()}.${file.originalname.split('.')[file.originalname.split('.').length - 1]}`);
     }
 });
@@ -40,9 +43,6 @@ const upload = multer({
 exports.create_post = async (req, res) => {
     // works on handling multer error
     await upload(req, res, (err) => {
-        const { error } = postValidation(req.body);
-        if (error) return res.status(400).json({ success: false, message: error.details[0].message });
-        return res.send([req.body, req.file]);
         if (err) {
             if (err instanceof multer.MulterError) {
                 if (err.code === 'LIMIT_FILE_SIZE') {
@@ -59,7 +59,6 @@ exports.create_post = async (req, res) => {
                 return res.status(400).json({ error: false, message: 'Please select blog image first' })
             } else {
                 handlePostCreate(req, res);
-                //console.log(req.file);
             }
         }
     });

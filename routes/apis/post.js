@@ -3,9 +3,6 @@ const router = require('express').Router();
 const verify = require('../../middleware/check-auth');
 const postController = require('../../controllers/post.controllers');
 
-router.post('/sagar', (req, res) => {
-   res.send(req.body);
-});
 // insert new post
 router.post('/', postController.create_post);
 

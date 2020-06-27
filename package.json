@@ -5,7 +5,7 @@
   "private": true,
   "author": "Sagar Khatri",
   "scripts": {
-    "start": "nodemon ./bin/www"
+    "start": "node ./bin/www"
   },
   "license": "MIT",
   "dependencies": {
