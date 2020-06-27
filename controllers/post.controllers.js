@@ -1,5 +1,6 @@
 const Post = require('../models/Post');
 const { postValidation } = require('../validation');
+const postService = require('../services/post.services');
 
 const multer = require('multer');
 const path = require('path');
@@ -141,7 +142,7 @@ const handlePostUpdate = async (req, res, post) => {
 
 // list all posts controller
 exports.list_all_posts = async (req, res) => {
-    await Post.find()
+    await Post.paginate()
         .then(posts => {
             res.status(200).json({ success: true, posts: posts });
         })
@@ -152,11 +153,14 @@ exports.list_all_posts = async (req, res) => {
 
 // get single post from id
 exports.find_one_post = async (req, res) => {
+    const latestPosts = await postService.getLatestPosts(req, res);
+    const mostlyViewedPosts = await postService.getMostlyViewedPosts(req, res);
+
     await Post.findById(req.params.postId)
         .then(post => {
             if (!post)
                 res.status(404).json({ success: false, message: 'No any post found with id ' + req.params.postId });
-            res.status(200).json({ success: true, post: post });
+            res.status(200).json({ success: true, post: post, latestPosts: latestPosts, mostlyViewedPosts: mostlyViewedPosts });
         })
         .catch(err => {
             res.status(400).json({ success: false, message: err });

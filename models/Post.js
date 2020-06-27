@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const paginate = require('mongoose-paginate');
 mongoose.set('useFindAndModify', false);
 
 const postScheme = new mongoose.Schema({
@@ -8,4 +9,5 @@ const postScheme = new mongoose.Schema({
     post_image: { type: String, required: true },
 }, { timestamps: true });
 
+postScheme.plugin(paginate);
 module.exports = mongoose.model('Post', postScheme);
