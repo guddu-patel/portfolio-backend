@@ -127,7 +127,7 @@ const handlePostUpdate = async (req, res, post) => {
         .then(doc => {
             fs.unlinkSync(doc.post_image);
         }).catch(er => {
-        return res.send(er);
+            console.log(er);
     });
 
     await Post.findByIdAndUpdate(req.params.postId, post, { new: true })
