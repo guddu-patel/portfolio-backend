@@ -122,7 +122,7 @@ exports.update_post = async (req, res) => {
 
 // handle post update
 const handlePostUpdate = async (req, res, post) => {
-    // return res.send('Hello');
+   
     Post.findById(req.params.postId).select('post_image')
         .then(doc => {
             fs.unlinkSync(doc.post_image);
