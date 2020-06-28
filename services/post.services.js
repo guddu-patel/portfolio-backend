@@ -14,6 +14,7 @@ exports.getLatestPosts = async (req, res) => {
     return latestPosts;
 }
 
+
 //return random 5 posts
 exports.getMostlyViewedPosts = async (req, res) => {
     const count = await Post.countDocuments();
