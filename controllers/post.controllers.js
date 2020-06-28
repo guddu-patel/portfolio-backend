@@ -142,7 +142,12 @@ const handlePostUpdate = async (req, res, post) => {
 
 // list all posts controller
 exports.list_all_posts = async (req, res) => {
-    await Post.paginate()
+    const {page, limit} = req.query;
+    const options = {
+        page: parseInt(page, 10) || 1,
+        limit: parseInt(limit, 10) || 10
+    }
+    await Post.paginate({}, options)
         .then(posts => {
             res.status(200).json({ success: true, posts: posts });
         })
