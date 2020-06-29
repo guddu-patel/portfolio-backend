@@ -9,7 +9,9 @@ exports.seeder = async (req, res) => {
             title: faker.lorem.sentence(),
             description: faker.lorem.paragraphs(),
             slug: faker.lorem.slug(),
-            post_image: 'public\\uploads\\'+counter+'.jpg'
+            post_image: 'public\\uploads\\'+counter+'.jpg',
+            page_content: faker.lorem.paragraph(),
+            category: ['news', 'technical', 'educational', 'entertainment'].sample()
         });
 
         await post.save()
@@ -22,4 +24,8 @@ exports.seeder = async (req, res) => {
     }
 
     res.status(200).json({ success: true, message: `Seeder complete with ${addedData} data added.` });
+}
+
+Array.prototype.sample = function(){
+    return this[Math.floor(Math.random()*this.length)];
 }
