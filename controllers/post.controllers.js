@@ -72,7 +72,9 @@ const handlePostCreate = async (req, res) => {
         title: req.body.title,
         description: req.body.description,
         slug: req.body.slug,
-        post_image: req.file.path
+        post_image: req.file.path,
+        page_content: req.body.page_content,
+        category: req.body.category,
     });
     await post.save()
         .then(resp => {
@@ -105,6 +107,8 @@ exports.update_post = async (req, res) => {
                 title: req.body.title,
                 description: req.body.description,
                 slug: req.body.slug,
+                page_content: req.body.page_content,
+                category: req.body.category,
             };
 
             if(req.file){
@@ -142,13 +146,15 @@ const handlePostUpdate = async (req, res, post) => {
 
 // list all posts controller
 exports.list_all_posts = async (req, res) => {
-    const {page, limit} = req.query;
+    const {page, limit, category} = req.query;
     const options = {
         page: parseInt(page, 10) || 1,
         limit: parseInt(limit, 10) || 10,
         sort: { '_id': -1 },
     }
-    await Post.paginate({}, options)
+    // works on category wise post filter
+    const filter = (category === undefined || category === '') ? {} : { "category": { "$regex": category, "$options": "i" } };
+    await Post.paginate(filter, options)
         .then(posts => {
             res.status(200).json({ success: true, posts: posts });
         })

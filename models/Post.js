@@ -7,6 +7,8 @@ const postScheme = new mongoose.Schema({
     description: { type: String, required: true  },
     slug: { type: String, required: true  },
     post_image: { type: String, required: true },
+    page_content: { type: String, required: false },
+    category: { type: String, required: false },
 }, { timestamps: true });
 
 postScheme.plugin(paginate);
