@@ -5,7 +5,7 @@ const postController = require('../../controllers/post.controllers');
 const postSeederController = require('../../controllers/post_seeder.controllers');
 
 // insert new post
-router.post('/',  postController.create_post);
+router.post('/',  verify, postController.create_post);
 
 // update a post
 router.put('/:postId',  verify, postController.update_post);
