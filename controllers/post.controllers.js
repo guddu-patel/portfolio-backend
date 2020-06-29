@@ -145,7 +145,8 @@ exports.list_all_posts = async (req, res) => {
     const {page, limit} = req.query;
     const options = {
         page: parseInt(page, 10) || 1,
-        limit: parseInt(limit, 10) || 10
+        limit: parseInt(limit, 10) || 10,
+        sort: { '_id': -1 },
     }
     await Post.paginate({}, options)
         .then(posts => {
