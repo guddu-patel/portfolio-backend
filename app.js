@@ -8,6 +8,7 @@ const cors = require('cors');
 // import routes
 const authAPI = require('./routes/apis/auth');
 const postAPI = require('./routes/apis/post');
+const contactAPI = require('./routes/apis/contact');
 
 // require database connection
 require('./config/db');
@@ -23,6 +24,7 @@ app.use('/public/uploads', express.static('public/uploads'));
 // use user api routes.
 app.use('/api', authAPI);
 app.use('/api/posts', postAPI);
+app.use('/api/contact', contactAPI);
 
 // first time app open send this response
 app.get('/', (req, res) => {
