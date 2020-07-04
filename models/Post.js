@@ -12,4 +12,4 @@ const postScheme = new mongoose.Schema({
 }, { timestamps: true });
 
 postScheme.plugin(paginate);
-module.exports = mongoose.model('Post', postScheme);
+module.exports = mongoose.model('posts', postScheme);
