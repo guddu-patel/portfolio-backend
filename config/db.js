@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
+// database user and secret
 const db = {
     database: process.env.DB_URL,
     secret: process.env.DB_PASS
