@@ -34,6 +34,19 @@ const postValidation = (data) => {
 
     return schema.validate(data);
 }
+
+// contact form  validation
+const contactValidation = (data) => {
+    const schema = Joi.object({
+        name: Joi.string().required(),
+        email: Joi.string().min(6).required().email(),
+        phone: Joi.string().min(10).max(10).required(),
+        message: Joi.string().max(255).required()
+    });
+
+    return schema.validate(data);
+}
 module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;
 module.exports.postValidation = postValidation;
+module.exports.contactValidation = contactValidation;

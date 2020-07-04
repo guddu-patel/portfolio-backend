@@ -13,6 +13,9 @@ const contactAPI = require('./routes/apis/contact');
 // require database connection
 require('./config/db');
 
+// set the view engine to ejs
+app.set('view engine', 'ejs');
+
 // initialize CORS middleware
 app.use(cors());
 app.use(express.json());
