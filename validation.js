@@ -40,7 +40,7 @@ const contactValidation = (data) => {
     const schema = Joi.object({
         name: Joi.string().required(),
         email: Joi.string().min(6).required().email(),
-        phone: Joi.number().min(10).max(10).required(),
+        phone: Joi.string().length(10).pattern(/^[0-9]+$/).required(),
         message: Joi.string().max(255).required()
     });
 
